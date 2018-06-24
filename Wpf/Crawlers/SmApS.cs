@@ -18,9 +18,9 @@
 
         public SmApS() { }
 
-        public override void Start(Action callback)
+        public override void Start(Action<string> reportProgress)
         {
-            callback();
+            reportProgress("Hello world!");
             //this.Crawl();
         }
 

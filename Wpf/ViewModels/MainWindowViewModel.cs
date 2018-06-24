@@ -2,6 +2,8 @@
 {
     using Prism.Commands;
     using Prism.Mvvm;
+    using System.Collections.Generic;
+    using System.Text;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Input;
@@ -10,32 +12,42 @@
     public class MainWindowViewModel : BindableBase
     {
         private BaseCrawler crawler;
-        private bool completed = false;
-        public bool Completed
+
+        private StringBuilder progressText;
+        public StringBuilder ProgressText
         {
             get
             {
-                return this.completed;
+                return this.progressText;
             }
             set
             {
-                this.completed = value;
-                this.RaisePropertyChanged("Completed");
+                this.progressText = value;
+                this.RaisePropertyChanged("ProgressText");
             }
         }
 
+
         public ICommand DoWorkCommand { get; private set; }
+        public ICommand SetCrawlerCommand { get; private set; }
 
         public MainWindowViewModel()
         {
+            this.progressText = new StringBuilder();
             this.crawler = new RsSandanski();
             this.DoWorkCommand = new DelegateCommand(
-                async () => await Task.Run(() => this.crawler.Start(this.CrawlerFinished)));
+                async () => await Task.Run(() => this.crawler.Start(this.ReportProgress)));
         }
 
-        public void CrawlerFinished()
+        public void ReportProgress(string line)
         {
-            this.Completed = true;
+            if (this.ProgressText.Length > 2000)
+            {
+                this.ProgressText.Clear();
+            }
+
+            this.ProgressText.AppendLine(line);
+            this.RaisePropertyChanged("ProgressText");
         }
 
 

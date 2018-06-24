@@ -13,10 +13,10 @@
     {
         public SAC() : base(){ }
 
-        public override void Start(Action callback)
+        public override void Start(Action<string> reportProgress)
         {
             this.CrawlPages();
-            callback();
+            reportProgress("hello world!");
         }
 
         public void CrawlPages()

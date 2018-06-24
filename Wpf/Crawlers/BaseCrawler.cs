@@ -14,7 +14,7 @@
 
         }
 
-        public abstract void Start(Action callback);
+        public abstract void Start(Action<string> reportProgress);
 
         /// <summary>
         /// Gets the data format of a file from a uri.
