@@ -13,10 +13,10 @@ namespace Wpf.Data
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class StorageEntities : DbContext
+    public partial class StorageEntities2 : DbContext
     {
-        public StorageEntities()
-            : base("name=StorageEntities")
+        public StorageEntities2()
+            : base("name=StorageEntities2")
         {
         }
     

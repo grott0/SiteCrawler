@@ -10,9 +10,6 @@
 
     public class RsSandanski : BaseCrawler
     {
-        private readonly string courtName = "Районен съд - Сандански";
-        private IRepository<Document> repository = new DocumentRepository();
-
         public RsSandanski()
         {
 
@@ -26,23 +23,25 @@
 
         private void Crawl()
         {
-            string baseUrl = @"http://rs-sandanski.com/verdicts.php";
+            string baseUrl = @"http://rs-sandanski.com/";
 
             using (WebClient client = new WebClient())
             {
                 int cnt = 0;
-                string page = client.DownloadString(baseUrl);
+                string initialUrl = baseUrl + "verdicts.php";
+                string page = client.DownloadString(initialUrl);
                 string regexPattern = "<td><a href=\"([^\"]*?)\"[\\w\\W]*?</td>\\s*<td>([^<]*?)</td>\\s*<td>([^<]*?)</td>\\s*<td>([^/]*?)/([^<]*?)</td>";
 
                 foreach (Match match in Regex.Matches(page, regexPattern, RegexOptions.IgnoreCase))
                 {
                     var fileHref = match.Groups[1].Value;
-                    string url = @"http://rs-sandanski.com/" + fileHref.Substring(2);
+                    string url = baseUrl + fileHref.Substring(2);
 
                     string fileDir = Path.GetFileNameWithoutExtension(fileHref);
                     string fileExtension = Path.GetExtension(fileHref);
                     string fileName = $"{fileDir}{fileExtension}";
                     byte[] data = client.DownloadData(url);
+                    int? format = (int?)this.GetDataFormat(fileName);
                     Document doc = new Document
                     {
                         Name = fileName,
@@ -53,7 +52,12 @@
                         Md5 = MD5.Create().ComputeHash(data)
                     };
 
-                    repository.Save(doc);
+                    using (IRepository<Document> repository = new DocumentRepository())
+                    {
+                        repository.Add(doc);
+                        repository.Save();
+                    }
+                    
                     cnt++;
                 }
 

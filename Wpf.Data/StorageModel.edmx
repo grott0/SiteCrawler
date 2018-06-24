@@ -12,7 +12,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="500" />
           <Property Name="Url" Type="nvarchar" MaxLength="1000" />
-          <Property Name="Md5" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Md5" Type="varbinary(max)" Nullable="false" />
           <Property Name="Encoding" Type="int" />
           <Property Name="Format" Type="int" />
           <Property Name="DataContent" Type="varbinary(max)" Nullable="false" />
@@ -32,12 +32,12 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="Url" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
-          <Property Name="Md5" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Md5" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
           <Property Name="Encoding" Type="Int32" />
           <Property Name="Format" Type="Int32" />
           <Property Name="DataContent" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
         </EntityType>
-        <EntityContainer Name="StorageEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="StorageEntities2" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Documents" EntityType="Self.Document" />
         </EntityContainer>
       </Schema>
@@ -45,7 +45,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="StorageModelStoreContainer" CdmEntityContainer="StorageEntities">
+        <EntityContainerMapping StorageEntityContainer="StorageModelStoreContainer" CdmEntityContainer="StorageEntities2">
           <EntitySetMapping Name="Documents">
             <EntityTypeMapping TypeName="StorageModel.Document">
               <MappingFragment StoreEntitySet="Documents">

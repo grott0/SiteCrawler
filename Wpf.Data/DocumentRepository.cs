@@ -1,37 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace Wpf.Data
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class DocumentRepository : IRepository<Document>
     {
+        private StorageEntities2 context = new StorageEntities2();
+
         public IEnumerable<Document> GetAll()
         {
-            using (StorageEntities context = new StorageEntities())
+            foreach (var document in context.Documents)
             {
-                return context.Documents.ToList();
+                yield return document;
             }
         }
 
         public Document GetById(int id)
         {
-            using (StorageEntities context = new StorageEntities())
-            {
-                return context.Documents.FirstOrDefault(x => x.Id == id);
-            }
+            return context.Documents.FirstOrDefault(x => x.Id == id);
         }
 
-        public void Save(Document entity)
+        public void Save()
         {
-            using (StorageEntities context = new StorageEntities())
-            {
-                context.Documents.Add(entity);
+            context.SaveChanges();
+        }
 
-                context.SaveChanges();
-            }
+        public void Add(Document entity)
+        {
+            context.Documents.Add(entity);
+        }
+
+        public void Dispose()
+        {
+            this.context.Dispose();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Wpf.Data
         public int Id { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
-        public string Md5 { get; set; }
+        public byte[] Md5 { get; set; }
         public Nullable<int> Encoding { get; set; }
         public Nullable<int> Format { get; set; }
         public byte[] DataContent { get; set; }

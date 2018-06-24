@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Wpf.Models
+﻿namespace Wpf.Models
 {
     public class DocumentDTO   
     {
@@ -12,7 +6,7 @@ namespace Wpf.Models
         public FormatType Format { get; set; }
         public string Name { get; set; }
         public string Url { get; set; }
-        public string Md5 { get; set; }
+        public byte[] Md5 { get; set; }
         public EncodingType? Encoding { get; set; } = null;
     }
 }
