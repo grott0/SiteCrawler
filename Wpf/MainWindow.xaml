@@ -15,7 +15,6 @@
                   ItemsSource="{Binding CrawlerNames}"
                   IsEnabled="{Binding UrlsComboBoxEnabled}"
                   SelectedItem="{Binding CrawlerName}"
-                  
                   Margin="10 10 10 10" 
                   SelectedIndex="1" />
 
