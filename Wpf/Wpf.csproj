@@ -97,7 +97,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\DocumentDTO.cs" />
     <Compile Include="Models\EncodingType.cs" />
     <Compile Include="Models\FormatType.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
