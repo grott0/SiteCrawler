@@ -62,11 +62,8 @@
 
                     base.documentsDownloaded++;
 
-                    if (base.documentsDownloaded % 100 == 0)
-                    {
-                        reportProgress($"Downloaded {base.documentsDownloaded}" +
-                            $" documents in {base.watch.Elapsed}");
-                    }
+                    reportProgress($"Downloaded {base.documentsDownloaded}" +
+                        $" documents in {base.watch.Elapsed}");
 
                 }
 

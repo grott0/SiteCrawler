@@ -78,11 +78,8 @@
 
                         base.documentsDownloaded++;
 
-                        if (documentsDownloaded % 100 == 0)
-                        {
-                            base.reportProgress($"Downloaded {base.documentsDownloaded} " +
-                                $"documents in {base.watch.Elapsed}");
-                        }
+                        base.reportProgress($"Downloaded {base.documentsDownloaded} " +
+                            $"documents in {base.watch.Elapsed}");
 
                     }
                 }
