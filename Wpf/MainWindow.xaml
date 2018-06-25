@@ -13,7 +13,8 @@
                   ItemsSource="{Binding WebsiteUrls}"
                   IsEnabled="{Binding UrlsComboBoxEnabled}"
                   SelectionChanged="UrlsComboBox_SelectionChanged"
-                  Margin="10 10 10 10"/>
+                  Margin="10 10 10 10" 
+                  SelectedIndex="1" />
 
         <Button 
             Height="23"
