@@ -11,7 +11,37 @@
 
     public class MainWindowViewModel : BindableBase
     {
-        private BaseCrawler crawler;
+        public BaseCrawler crawler;
+        public List<string> WebsiteUrls { get; set; }
+
+        private bool urlsComboBoxEnabled;
+
+        public bool UrlsComboBoxEnabled
+        {
+            get
+            {
+                return urlsComboBoxEnabled;
+            }
+            set
+            {
+                urlsComboBoxEnabled = value;
+                this.RaisePropertyChanged("UrlsComboBoxEnabled");
+            }
+        }
+
+        private bool startButtonEnabled;
+        public bool StartButtonEnabled
+        {
+            get
+            {
+                return startButtonEnabled;
+            }
+            private set
+            {
+                startButtonEnabled = value;
+                this.RaisePropertyChanged("StartButtonEnabled");
+            }
+        }
 
         private StringBuilder progressText;
         public StringBuilder ProgressText
@@ -28,15 +58,36 @@
         }
 
 
-        public ICommand DoWorkCommand { get; private set; }
-        public ICommand SetCrawlerCommand { get; private set; }
+        public ICommand StartCrawlerCommand { get; private set; }
 
         public MainWindowViewModel()
         {
-            this.progressText = new StringBuilder();
-            this.crawler = new RsSandanski();
-            this.DoWorkCommand = new DelegateCommand(
-                async () => await Task.Run(() => this.crawler.Start(this.ReportProgress)));
+            this.StartButtonEnabled = true;
+            this.WebsiteUrls = new List<string>()
+            {
+                "www.sac.justice.bg",
+                "www.rs-sandanski.com",
+                "www.ac-smolian.org"
+            };
+
+            this.UrlsComboBoxEnabled = true;
+            this.ProgressText = new StringBuilder();
+            this.StartCrawlerCommand = new DelegateCommand(
+                async () => await Task.Run(() => this.StartCrawler()));
+        }
+
+        public void StartCrawler()
+        {
+            if (this.crawler == null)
+            {
+                return;
+            }
+
+            this.StartButtonEnabled = false;
+            this.UrlsComboBoxEnabled = false;
+            this.crawler.Start(this.ReportProgress);
+            this.UrlsComboBoxEnabled = true;
+            this.StartButtonEnabled = true;
         }
 
         public void ReportProgress(string line)
@@ -49,7 +100,6 @@
             this.ProgressText.AppendLine(line);
             this.RaisePropertyChanged("ProgressText");
         }
-
 
     }
 }

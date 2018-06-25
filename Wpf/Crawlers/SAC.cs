@@ -5,33 +5,45 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Security.Cryptography;
     using System.Text;
-    using System.Threading;
+    using Wpf.Data;
     using Wpf.Models;
 
+    /// <summary>
+    /// Name: Върховен административен съд
+    /// Url: http://www.sac.justice.bg/
+    /// </summary>
     public class SAC : BaseCrawler
     {
-        public SAC() : base(){ }
 
         public override void Start(Action<string> reportProgress)
         {
+            base.reportProgress = reportProgress;
             this.CrawlPages();
-            reportProgress("hello world!");
         }
 
         public void CrawlPages()
         {
-            for (int year = 2014; year <= DateTime.Now.Year; year++)
+            base.watch.Start();
+            base.reportProgress("Crawler for www.sac.justice.bg started.");
+
+            for (int year = 2007; year <= DateTime.Now.Year; year++)
             {
                 for (int month = 1; month <= 12; month++)
                 {
                     for (int day = 1; day <= DateTime.DaysInMonth(year, month); day++)
                     {
+                        // Insert the day, month and year into the url.
                         string url = $"http://www.sac.justice.bg/court22.nsf/($All)/?SearchView&SearchWV=0&SearchFuzzy=0&Query=(FIELD%20form=Decision3%20OR%20FIELD%20form=Decision)%20AND%20(FIELD%20d_Date>={day}/{month}/{year}%20AND%20FIELD%20d_Date<{day + 1}/{month}/{year})&TIMESCOPE=1";
                         this.CrawlPage(url);
                     }
                 }
             }
+
+            base.watch.Stop();
+            base.reportProgress($"Downloading finished in {base.watch.Elapsed}.");
+            base.reportProgress($"Total documents downloaded: {base.documentsDownloaded}");
         }
 
         public void CrawlPage(string url)
@@ -56,14 +68,28 @@
 
                 foreach (HtmlNode contentRow in contentRows)
                 {
-                    DocumentDTO actDocument = this.GetActDocument(contentRow);
+                    Document actDocument = this.GetActDocument(contentRow);
 
-                    // Save to DB.
+                    using (IRepository<Document> repository = new DocumentRepository())
+                    {
+                        repository.Add(actDocument);
+                        repository.Save();
+
+
+                        base.documentsDownloaded++;
+
+                        if (documentsDownloaded % 100 == 0)
+                        {
+                            base.reportProgress($"Downloaded {base.documentsDownloaded} " +
+                                $"documents in {base.watch.Elapsed}");
+                        }
+
+                    }
                 }
             }
         }
 
-        public DocumentDTO GetActDocument(HtmlNode contentRow)
+        public Document GetActDocument(HtmlNode contentRow)
         {
             using (WebClient client = new WebClient())
             {
@@ -83,16 +109,17 @@
                     .OuterHtml;
 
                 actContent = this.ConvertFromKOI8RToUTF8(actContent);
-
                 string name = this.ExtractUniqueIdFromUrl(actUrl) + "_act.html";
+                byte[] dataContent = Encoding.UTF8.GetBytes(actContent);
 
-                return new DocumentDTO
+                return new Document
                 {
                     Name = name,
-                    Encoding = EncodingType.Utf8,
-                    DataContent = Encoding.UTF8.GetBytes(actContent),
-                    Format = FormatType.Html,
-                    Url = actUrl
+                    Encoding = (int?)EncodingType.Utf8,
+                    DataContent = dataContent,
+                    Format = (int?)FormatType.Html,
+                    Url = actUrl,
+                    Md5 = MD5.Create().ComputeHash(dataContent)
                 };
             }
         }

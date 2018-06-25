@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Wpf.Crawlers;
 using Wpf.ViewModels;
 
 namespace Wpf
 {
-    
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -26,6 +16,26 @@ namespace Wpf
         {
             this.DataContext = new MainWindowViewModel();
             InitializeComponent();
+        }
+
+        private void UrlsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string url = this.UrlsComboBox.SelectedItem.ToString();
+
+            switch (url)
+            {
+                case "www.sac.justice.bg":
+                    ((MainWindowViewModel)this.DataContext).crawler = new SAC();
+                    break;
+                case "www.rs-sandanski.com":
+                    ((MainWindowViewModel)this.DataContext).crawler = new RsSandanski();
+                    break;
+                case "www.ac-smolian.org":
+                    ((MainWindowViewModel)this.DataContext).crawler = new SmApS();
+                    break;
+                default:
+                    throw new Exception("Invalid selection.");
+            }
         }
     }
 }

@@ -5,12 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="238.15">
-    <StackPanel>
-        <ComboBox Height="30" Width="200" Name="MyListBox" ItemsSource="{Binding Integers}"></ComboBox>
-        <Button Height="30" Width="70" Margin="0 5 0 0" Name="MyButton" Command="{Binding DoWorkCommand}" Grid.Row="1">DoWork</Button>
-        <CheckBox IsChecked="{Binding Completed}"></CheckBox>
-        <TextBlock Height="200" Margin="-3,5,3,0" Text="{Binding ProgressText}"></TextBlock>
+        Title="SiteCrawler" Height="304.138" Width="352.978">
+    <StackPanel Margin="0,0,0,0">
+        <ComboBox Height="25"
+                  Width="180"
+                  Name="UrlsComboBox"
+                  ItemsSource="{Binding WebsiteUrls}"
+                  IsEnabled="{Binding UrlsComboBoxEnabled}"
+                  SelectionChanged="UrlsComboBox_SelectionChanged"
+                  Margin="10 10 10 10"/>
+
+        <Button 
+            Height="23"
+            Width="70"
+            Margin="0 5 0 0"
+            Name="StartButton"
+            Command="{Binding StartCrawlerCommand}"
+            IsEnabled="{Binding StartButtonEnabled}"
+            Grid.Row="1"
+            Content="Start" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Height="130" VerticalAlignment="Top">
+            <TextBlock
+            Margin="10,10,10,0"
+            Name="LogTextBlock"
+            Text="{Binding Path=ProgressText, UpdateSourceTrigger=PropertyChanged}" />
+        </ScrollViewer>
     </StackPanel>
 
 </Window>

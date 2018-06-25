@@ -4,15 +4,14 @@
     using System.IO;
     using System.Globalization;
     using Wpf.Models;
+    using System.Diagnostics;
 
     public abstract class BaseCrawler
     {
         protected CultureInfo cultureInfo = CultureInfo.InvariantCulture;
-
-        public BaseCrawler()
-        {
-
-        }
+        protected int documentsDownloaded = 0;
+        protected Stopwatch watch = new Stopwatch();
+        protected Action<string> reportProgress;
 
         public abstract void Start(Action<string> reportProgress);
 
@@ -61,29 +60,6 @@
             filename = filename.Trim().ToLower();
 
             return filename;
-        }
-
-        protected string BuildHtmlDocument(string content, EncodingType encodingType)
-        {
-            var charset = "UTF-8";
-            switch (encodingType)
-            {
-                case EncodingType.Utf8:
-                    charset = "UTF-8";
-                    break;
-                case EncodingType.Windows1251:
-                    charset = "windows-1251";
-                    break;
-                case EncodingType.Windows1252:
-                    charset = "windows-1251";
-                    break;
-                default:
-                    charset = "UTF-8";
-                    break;
-            }
-
-            var res = $"<html><head><meta charset=\"{charset}\"></head><body>{content}</body></html>";
-            return res;
         }
     }
 }

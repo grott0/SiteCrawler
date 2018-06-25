@@ -1,6 +1,7 @@
 ﻿namespace Wpf.Crawlers
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Net;
     using System.Security.Cryptography;
@@ -8,26 +9,26 @@
     using Wpf.Data;
     using Wpf.Models;
 
+    /// <summary>
+    /// Name: Районен съд - Сандански
+    /// Url: http://www.rs-smolian.com/
+    /// </summary>
     public class RsSandanski : BaseCrawler
     {
-        public RsSandanski()
-        {
-
-        }
-
         public override void Start(Action<string> reportProgress)
         {
+            base.reportProgress = reportProgress;
             this.Crawl(reportProgress);
         }
 
         private void Crawl(Action<string> reportProgress)
         {
-            reportProgress("Crawler RsSandanski started.");
+            base.watch.Start();
+            base.reportProgress("Crawler for www.rs-sandanski.com started.");
             string baseUrl = @"http://rs-sandanski.com/";
 
             using (WebClient client = new WebClient())
             {
-                int cnt = 0;
                 string initialUrl = baseUrl + "verdicts.php";
                 string page = client.DownloadString(initialUrl);
                 string regexPattern = "<td><a href=\"([^\"]*?)\"[\\w\\W]*?</td>\\s*<td>([^<]*?)</td>\\s*<td>([^<]*?)</td>\\s*<td>([^/]*?)/([^<]*?)</td>";
@@ -40,7 +41,7 @@
                     string fileName = Path.GetFileNameWithoutExtension(href);
                     string fileExtension = Path.GetExtension(href);
                     fileName = $"{fileName}{fileExtension}";
-                    byte[] data = client.DownloadData(url);
+                    byte[] dataContent = client.DownloadData(url);
                     int? format = (int?)this.GetDataFormat(fileName);
 
                     Document doc = new Document
@@ -48,25 +49,30 @@
                         Name = fileName,
                         Url = url,
                         Format = format,
-                        DataContent = data,
+                        DataContent = dataContent,
                         Encoding = (int?)EncodingType.Windows1251,
-                        Md5 = MD5.Create().ComputeHash(data)
+                        Md5 = MD5.Create().ComputeHash(dataContent)
                     };
 
                     using (IRepository<Document> repository = new DocumentRepository())
                     {
-                        //repository.Add(doc);
-                        //repository.Save();
+                        repository.Add(doc);
+                        repository.Save();
                     }
-                    
-                    cnt++;
 
-                    if (cnt % 100 == 0)
+                    base.documentsDownloaded++;
+
+                    if (base.documentsDownloaded % 100 == 0)
                     {
-                        reportProgress($"Downloaded documents: {cnt}");
+                        reportProgress($"Downloaded {base.documentsDownloaded}" +
+                            $" documents in {base.watch.Elapsed}");
                     }
+
                 }
 
+                base.watch.Stop();
+                reportProgress($"Downloading finished in {base.watch.Elapsed}.");
+                reportProgress($"Total documents downloaded: {base.documentsDownloaded}");
             }
 
         }

@@ -2,8 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Net;
+    using System.Security.Cryptography;
     using System.Text.RegularExpressions;
+    using Wpf.Data;
     using Wpf.Models;
 
     /// <summary>
@@ -14,14 +17,11 @@
     /// </summary>
     public class SmApS : BaseCrawler
     {
-        private string initialUrl = "http://87.126.80.220/bcap/admc/webbcap.nsf/acts?OpenView&Start=1&Count=300&Collapse=1#1";
-
-        public SmApS() { }
 
         public override void Start(Action<string> reportProgress)
         {
-            reportProgress("Hello world!");
-            //this.Crawl();
+            base.reportProgress = reportProgress;
+            this.Crawl();
         }
 
         /// <summary>
@@ -29,7 +29,8 @@
         /// </summary>
         private void Crawl()
         {
-            int cnt = 0;
+            base.watch.Start();
+            base.reportProgress("Crawler for www.ac-smolian.com started.");
             int rootNodesCount = this.GetRootNodesCount();
 
             // First level iterator.
@@ -41,20 +42,22 @@
                     // Third level iterator.
                     for (int k = 1; k <= int.MaxValue; k++)
                     {
-                        string pageUrl = $"http://87.126.80.220/bcap/admc/webbcap.nsf/acts?OpenView&Start=1&Count=300&Expand={i}.{j}.{k}#{i}.{j}.{k}";
-                        List<string> documentUrls = this.GetDocumentUrls(pageUrl);
+                        string pageUrl = $"http://213.91.128.55/bcap/admc/webbcap.nsf/acts?OpenView&Start=1&Count=300&Expand={i}.{j}.{k}#{i}.{j}.{k}";
+                        List<string> documentUrls = this.GetDocumentsUrls(pageUrl);
 
                         if (documentUrls.Count == 0)
                         {
                             break;
                         }
-
-                        Console.WriteLine($"Documents downloaded: {++cnt}");
+                        
                         this.DownloadDocuments(documentUrls);
-                        // Save to DB.
                     }
                 }
             }
+
+            base.watch.Stop();
+            base.reportProgress($"Downloading finished in {watch.Elapsed}.");
+            base.reportProgress($"Total documents downloaded: {documentsDownloaded}");
         }
 
         private int GetRootNodesCount()
@@ -62,15 +65,17 @@
             using (WebClient client = new WebClient())
             {
                 string pattern = @"<a href=";
-                string page = client.DownloadString(this.initialUrl);
+                string initialUrl = "http://213.91.128.55/bcap/admc/webbcap.nsf/acts?OpenView&Start=1&Count=300&Collapse=1#1";
+                string page = client.DownloadString(initialUrl);
+                int rootNodesCount = Regex.Matches(page, pattern).Count;
 
-                return Regex.Matches(page, pattern).Count;
+                return rootNodesCount;
             }
 
         }
 
 
-        private List<string> GetDocumentUrls(string pageUrl)
+        private List<string> GetDocumentsUrls(string pageUrl)
         {
             using (WebClient client = new WebClient())
             {
@@ -88,31 +93,42 @@
             }
         }
 
-
-        /// <summary>
-        /// Downloads the specified document groups.
-        /// </summary>
-        /// <param name="documentUrls">A collection of document group urls.</param>
         private void DownloadDocuments(List<string> documentUrls)
         {
             foreach (var documentUrl in documentUrls)
             {
                 using (WebClient client = new WebClient())
                 {
-                    string normalizedUrl = $"http://87.126.80.220{documentUrl}";
+                    string normalizedUrl = $"http://213.91.128.55{documentUrl}";
                     string[] urlArgs = documentUrl.Split('/');
                     string docName = urlArgs[5].Replace("?OpenDocument", "");
                     byte[] dataContent = client.DownloadData(normalizedUrl);
                     //string docName = new string(docUrl.Split('/').Skip(5).First().TakeWhile(x => x != '?').ToArray());
 
-                    DocumentDTO actInfo = new DocumentDTO()
+                    Document actDocument = new Document()
                     {
                         Name = docName + "_act.html",
                         Url = normalizedUrl,
-                        Format = this.GetDataFormat(".html"),
-                        Encoding = EncodingType.Utf8,
-                        DataContent = dataContent
+                        Format = (int?)this.GetDataFormat(".html"),
+                        Encoding = (int?)EncodingType.Utf8,
+                        DataContent = dataContent,
+                        Md5 = MD5.Create().ComputeHash(dataContent)
                     };
+
+                    using (IRepository<Document> repository = new DocumentRepository())
+                    {
+                        repository.Add(actDocument);
+                        repository.Save();
+                    }
+
+
+                    base.documentsDownloaded++;
+
+                    if (base.documentsDownloaded % 100 == 0)
+                    {
+                        base.reportProgress($"Downloaded {base.documentsDownloaded}" +
+                            $" documents in {base.watch.Elapsed}");
+                    }
                 }
 
             }
