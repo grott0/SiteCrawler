@@ -25,7 +25,6 @@
             Name="StartButton"
             Command="{Binding StartCrawlerCommand}"
             IsEnabled="{Binding StartButtonEnabled}"
-            Grid.Row="1"
             Content="Start" />
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Height="130" VerticalAlignment="Top">
