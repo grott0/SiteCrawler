@@ -16,7 +16,6 @@
     /// </summary>
     public class SAC : BaseCrawler
     {
-
         public override void Start(Action<string> reportProgress)
         {
             base.reportProgress = reportProgress;

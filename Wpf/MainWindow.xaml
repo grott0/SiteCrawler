@@ -12,9 +12,10 @@
         <ComboBox Height="25"
                   Width="180"
                   Name="UrlsComboBox"
-                  ItemsSource="{Binding WebsiteUrls}"
+                  ItemsSource="{Binding CrawlerNames}"
                   IsEnabled="{Binding UrlsComboBoxEnabled}"
-                  SelectionChanged="UrlsComboBox_SelectionChanged"
+                  SelectedItem="{Binding CrawlerName}"
+                  
                   Margin="10 10 10 10" 
                   SelectedIndex="1" />
 

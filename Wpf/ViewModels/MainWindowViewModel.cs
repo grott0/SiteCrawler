@@ -2,17 +2,45 @@
 {
     using Prism.Commands;
     using Prism.Mvvm;
+    using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Windows;
     using System.Windows.Input;
     using Wpf.Crawlers;
 
     public class MainWindowViewModel : BindableBase
     {
-        public BaseCrawler Crawler { get; set; }
-        public List<string> WebsiteUrls { get; set; }
+        private BaseCrawler crawler;
+
+        private string crawlerName;
+        public string CrawlerName
+        {
+            get
+            {
+                return this.crawlerName;
+            }
+            set
+            {
+                this.crawlerName = value;
+                this.RaisePropertyChanged("CrawlerName");
+                this.SetCrawler();
+            }
+        }
+
+        private List<string> crawlerNames;
+        public List<string> CrawlerNames
+        {
+            get
+            {
+                return crawlerNames;
+            }
+            private set
+            {
+                crawlerNames = value;
+                this.RaisePropertyChanged("CrawlerNames");
+            }
+        }
 
         private bool urlsComboBoxEnabled;
 
@@ -22,7 +50,7 @@
             {
                 return urlsComboBoxEnabled;
             }
-            set
+            private set
             {
                 urlsComboBoxEnabled = value;
                 this.RaisePropertyChanged("UrlsComboBoxEnabled");
@@ -60,16 +88,10 @@
 
         public ICommand StartCrawlerCommand { get; private set; }
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(List<string> crawlers)
         {
+            this.crawlerNames = crawlers;
             this.StartButtonEnabled = true;
-            this.WebsiteUrls = new List<string>()
-            {
-                "www.sac.justice.bg",
-                "www.rs-sandanski.com",
-                "www.ac-smolian.org"
-            };
-
             this.UrlsComboBoxEnabled = true;
             this.ProgressText = new StringBuilder();
             this.StartCrawlerCommand = new DelegateCommand(
@@ -78,17 +100,36 @@
 
         public void StartCrawler()
         {
-            if (this.Crawler == null)
+            if (this.crawler == null)
             {
                 return;
             }
 
             this.StartButtonEnabled = false;
             this.UrlsComboBoxEnabled = false;
-            this.Crawler.Start(this.ReportProgress);
+            this.crawler.Start(this.ReportProgress);
             this.UrlsComboBoxEnabled = true;
             this.StartButtonEnabled = true;
         }
+
+
+        private void SetCrawler()
+        {
+            switch (this.crawlerName)
+            {
+                case "www.rs-sandanski.com":
+                    this.crawler = new Sandanski();
+                    break;
+                case "www.sac.justice.bg":
+                    this.crawler = new SAC();
+                    break;
+                case "www.ac-smolian.org":
+                    this.crawler = new Smolian();
+                    break;
+                default: throw new Exception("Invalid crawler specified.");
+            }
+        }
+
 
         public void ReportProgress(string line)
         {
