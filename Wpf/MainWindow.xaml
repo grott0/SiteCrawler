@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf"
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
         mc:Ignorable="d"
         Title="SiteCrawler" Height="304.138" Width="352.978">
+
     <StackPanel Margin="0,0,0,0">
         <ComboBox Height="25"
                   Width="180"

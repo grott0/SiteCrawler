@@ -13,7 +13,7 @@
     /// Name: Районен съд - Сандански
     /// Url: http://www.rs-smolian.com/
     /// </summary>
-    public class RsSandanski : BaseCrawler
+    public class Sandanski : BaseCrawler
     {
         public override void Start(Action<string> reportProgress)
         {

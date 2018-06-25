@@ -15,7 +15,7 @@
     /// FileTree Url: http://87.126.80.220/bcap/admc/webbcap.nsf/acts?OpenView&Start=1&Count=300&Collapse=1#1
     /// Search Url: http://www.ac-smolian.org/info/reference.html
     /// </summary>
-    public class SmApS : BaseCrawler
+    public class Smolian : BaseCrawler
     {
 
         public override void Start(Action<string> reportProgress)

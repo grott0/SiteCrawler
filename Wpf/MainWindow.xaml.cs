@@ -25,13 +25,13 @@ namespace Wpf
             switch (url)
             {
                 case "www.sac.justice.bg":
-                    ((MainWindowViewModel)this.DataContext).crawler = new SAC();
+                    ((MainWindowViewModel)this.DataContext).Crawler = new SAC();
                     break;
                 case "www.rs-sandanski.com":
-                    ((MainWindowViewModel)this.DataContext).crawler = new RsSandanski();
+                    ((MainWindowViewModel)this.DataContext).Crawler = new Sandanski();
                     break;
                 case "www.ac-smolian.org":
-                    ((MainWindowViewModel)this.DataContext).crawler = new SmApS();
+                    ((MainWindowViewModel)this.DataContext).Crawler = new Smolian();
                     break;
                 default:
                     throw new Exception("Invalid selection.");

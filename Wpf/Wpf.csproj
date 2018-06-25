@@ -88,9 +88,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Crawlers\BaseCrawler.cs" />
-    <Compile Include="Crawlers\RsSandanski.cs" />
+    <Compile Include="Crawlers\Sandanski.cs" />
     <Compile Include="Crawlers\SAC.cs" />
-    <Compile Include="Crawlers\SmApS.cs" />
+    <Compile Include="Crawlers\Smolian.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

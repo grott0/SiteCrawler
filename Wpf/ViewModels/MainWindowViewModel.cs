@@ -11,7 +11,7 @@
 
     public class MainWindowViewModel : BindableBase
     {
-        public BaseCrawler crawler;
+        public BaseCrawler Crawler { get; set; }
         public List<string> WebsiteUrls { get; set; }
 
         private bool urlsComboBoxEnabled;
@@ -78,14 +78,14 @@
 
         public void StartCrawler()
         {
-            if (this.crawler == null)
+            if (this.Crawler == null)
             {
                 return;
             }
 
             this.StartButtonEnabled = false;
             this.UrlsComboBoxEnabled = false;
-            this.crawler.Start(this.ReportProgress);
+            this.Crawler.Start(this.ReportProgress);
             this.UrlsComboBoxEnabled = true;
             this.StartButtonEnabled = true;
         }
